@@ -56,7 +56,8 @@ android.presplash_color = #212121
 android.permissions = WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 
 # (int) Target Android API, should be as high as possible.
-#android.api = 33
+android.api = 33
+android.accept_sdk_license = True
 
 # (int) Minimum API your APK will support.
 android.minapi = 21
@@ -103,6 +104,7 @@ android.minapi = 21
 
 # (str) Bootstrap to use for android builds
 # p4a.bootstrap = sdl2
+p4a.branch = master
 
 [buildozer]
 

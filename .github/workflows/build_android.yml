@@ -64,14 +64,17 @@ jobs:
             uuid-dev \
             xz-utils \
             libc6-dev-i386 \
-            libc6-dev-arm64-cross \
-            ant
+            libc6-dev-arm64-cross
 
           pip install --upgrade pip
           pip install --upgrade buildozer cython==0.29.36 virtualenv
-          # ensure python-for-android dependency 'sh' is compatible
-          pip install "sh>=2.0.0,<3.0"
           pip install git+https://github.com/kivy/python-for-android.git
+
+      - name: Workaround for __GNUC_PREREQ
+        run: |
+           # This step is CRITICAL for Ubuntu 22.04+ runners.
+           # It prevents the Android NDK from accidentally using the host system's (incompatible) headers.
+           sudo mv /usr/include/x86_64-linux-gnu/sys/cdefs.h /usr/include/x86_64-linux-gnu/sys/cdefs.h.bak
 
       - name: Build with Buildozer
         # yes | ... automatically accepts the license agreement

@@ -104,7 +104,7 @@ android.ndk = 25b
 
 # (str) Bootstrap to use for android builds
 # p4a.bootstrap = sdl2
-p4a.branch = master
+# p4a.branch = master
 
 [buildozer]
 

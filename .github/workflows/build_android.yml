@@ -52,7 +52,17 @@ jobs:
             unzip \
             autoconf \
             automake \
-            libtool
+            libtool \
+            pkg-config \
+            libncurses5-dev \
+            libncursesw5-dev \
+            cmake \
+            libbz2-dev \
+            liblzma-dev \
+            libreadline-dev \
+            tk-dev \
+            uuid-dev \
+            xz-utils
             
           pip install --upgrade buildozer cython==0.29.36 virtualenv
 

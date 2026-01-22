@@ -64,7 +64,9 @@ jobs:
             uuid-dev \
             xz-utils
             
+          pip install --upgrade pip
           pip install --upgrade buildozer cython==0.29.36 virtualenv
+          pip install git+https://github.com/kivy/python-for-android.git
 
       - name: Build with Buildozer
         # yes | ... automatically accepts the license agreement

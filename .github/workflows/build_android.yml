@@ -45,15 +45,21 @@ jobs:
             gstreamer1.0-plugins-good \
             libltdl-dev \
             sqlite3 \
-            libsqlite3-dev
+            libsqlite3-dev \
+            libssl-dev \
+            libffi-dev \
+            zip \
+            unzip \
+            autoconf \
+            automake \
+            libtool
             
-          pip install buildozer cython==0.29.36
+          pip install --upgrade buildozer cython==0.29.36 virtualenv
 
       - name: Build with Buildozer
         # yes | ... automatically accepts the license agreement
         run: |
           rm -rf .buildozer
-          yes | buildozer android debug
           yes | buildozer android debug
         
       - name: Upload APK artifact

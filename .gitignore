@@ -1,5 +1,15 @@
+# Build artifacts
 .buildozer/
 bin/
+build/
+dist/
+
+# Python
 __pycache__/
 *.pyc
 *.log
+.venv/
+venv/
+
+# User Data (Exclude actual DB from repo)
+weight_training.db

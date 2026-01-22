@@ -62,11 +62,17 @@ jobs:
             libreadline-dev \
             tk-dev \
             uuid-dev \
-            xz-utils
+            xz-utils \
+            libc6-dev-i386 \
+            libc6-dev-arm64-cross
             
           pip install --upgrade pip
           pip install --upgrade buildozer cython==0.29.36 virtualenv
           pip install git+https://github.com/kivy/python-for-android.git
+          
+      - name: Workaround for __GNUC_PREREQ
+        run: |
+           sudo mv /usr/include/x86_64-linux-gnu/sys/cdefs.h /usr/include/x86_64-linux-gnu/sys/cdefs.h.bak
 
       - name: Build with Buildozer
         # yes | ... automatically accepts the license agreement

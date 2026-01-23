@@ -109,7 +109,7 @@ def main(page: ft.Page):
                         content=ft.Container(
                             content=ft.Column([
                                 ft.Text(r[1], size=20, weight=ft.FontWeight.BOLD),
-                                ft.Icon(ft.icons.CHEVRON_RIGHT, color=ft.colors.BLUE_200)
+                                ft.Icon("chevron_right", color=ft.Colors.BLUE_200)
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                             padding=20,
                             on_click=on_click_handler
@@ -117,16 +117,16 @@ def main(page: ft.Page):
                     )
                 )
 
-            return ft.View(
+            return ft.View(route=
                 "/",
                 controls=[
-                    ft.AppBar(title=ft.Text("My Routines"), bgcolor=ft.colors.SURFACE_VARIANT),
+                    ft.AppBar(title=ft.Text("My Routines"), bgcolor="surfaceVariant"),
                     ft.Column(
                         controls=routine_controls,
                         scroll=ft.ScrollMode.AUTO
                     ),
                     ft.FloatingActionButton(
-                        icon=ft.icons.ADD, 
+                        icon="add", 
                         on_click=lambda e: page.open(ft.SnackBar(ft.Text("Add Routine coming next!")))
                     ),
                 ]
@@ -166,13 +166,13 @@ def main(page: ft.Page):
 
             conn.close()
 
-            return ft.View(
+            return ft.View(route=
                 f"/routine/{routine_id}",
                 controls=[
                     ft.AppBar(
                         title=ft.Text(routine_name), 
-                        leading=ft.IconButton(ft.icons.ARROW_BACK, on_click=lambda e: page.pop()),
-                        bgcolor=ft.colors.SURFACE_VARIANT
+                        leading=ft.IconButton("arrow_back", on_click=lambda e: page.pop()),
+                        bgcolor="surfaceVariant"
                     ),
                     ft.Column(
                         controls=exercise_controls,
@@ -236,7 +236,7 @@ def main(page: ft.Page):
                         content=ft.Column([
                             ft.Row([
                                 ft.Text(self.name, size=18, weight=ft.FontWeight.BOLD),
-                                ft.IconButton(ft.icons.SHOW_CHART, on_click=self.show_history)
+                                ft.IconButton("show_chart", on_click=self.show_history)
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                             
                             ft.Text(self.log_text, size=12, italic=True),
@@ -253,11 +253,35 @@ def main(page: ft.Page):
                 )
 
         # --- Routing ---
+        # --- Routing ---
         def route_change(route):
+            print(f"Route changed to: {page.route}")
             page.views.clear()
-            page.views.append(home_view())
-            if page.route == "/routine":
-                pass 
+            
+            try:
+                # Always start with home view
+                page.views.append(home_view())
+                
+                # Handle specific routes
+                if page.route.startswith("/routine/"):
+                     # Parse routine ID from route, e.g. /routine/1
+                     try:
+                         rout_id = int(page.route.split("/")[-1])
+                         # We need to fetch the name again or pass it. 
+                         # For now let's just fetch it from DB to be safe
+                         conn = DatabaseManager.get_connection()
+                         cur = conn.cursor()
+                         res = cur.execute("SELECT name FROM routines WHERE id=?", (rout_id,)).fetchone()
+                         conn.close()
+                         if res:
+                             page.views.append(routine_view(rout_id, res[0]))
+                     except Exception as ex:
+                         print(f"Error loading routine view: {ex}")
+                         
+            except Exception as e:
+                print(f"Error in route_change: {e}")
+                page.views.append(ft.View("/", [ft.Text(f"Error: {e}", color="red")]))
+                
             page.update()
 
         def view_pop(view):
@@ -268,7 +292,10 @@ def main(page: ft.Page):
         page.on_route_change = route_change
         page.on_view_pop = view_pop
         
-        page.go(page.route)
+        # Initial navigation
+        print(f"Initial calling of route_change with route: {page.route}")
+        route_change(None)
+        # page.go(page.route) # This might not trigger if already on route
 
     except Exception as e:
         page.clean()

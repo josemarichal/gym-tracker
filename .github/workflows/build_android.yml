@@ -1,5 +1,4 @@
 name: Build Android APK
-
 on:
   push:
     branches: [ "main", "master" ]
@@ -8,77 +7,31 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          
+      - name: Install Flet
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            git \
-            ffmpeg \
-            libsdl2-dev \
-            libsdl2-image-dev \
-            libsdl2-mixer-dev \
-            libsdl2-ttf-dev \
-            libportmidi-dev \
-            libswscale-dev \
-            libavformat-dev \
-            libavcodec-dev \
-            zlib1g-dev \
-            libgstreamer1.0 \
-            gstreamer1.0-plugins-base \
-            gstreamer1.0-plugins-good \
-            libltdl-dev \
-            sqlite3 \
-            libsqlite3-dev \
-            libssl-dev \
-            libffi-dev \
-            zip \
-            unzip \
-            autoconf \
-            automake \
-            libtool \
-            pkg-config \
-            libncurses5-dev \
-            libncursesw5-dev \
-            cmake \
-            libbz2-dev \
-            liblzma-dev \
-            libreadline-dev \
-            tk-dev \
-            uuid-dev \
-            xz-utils \
-            libc6-dev-i386 \
-            libc6-dev-arm64-cross
-
-          pip install --upgrade pip
-          pip install --upgrade buildozer cython==0.29.36 virtualenv
-          pip install "sh>=2.0.0,<3.0"
-          pip install git+https://github.com/kivy/python-for-android.git
-
-      - name: Build with Buildozer
-        # yes | ... automatically accepts the license agreement
+          pip install flet
+          
+      - name: Build APK
         run: |
-          rm -rf .buildozer
-          yes | buildozer android debug
-
-      - name: Upload APK artifact
+          flet build apk --verbose --org org.test --project-name gymtrackerpro --product-name "Gym Tracker Pro"
+          
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: bin/*.apk
+          name: gym-tracker-apk
+          path: build/apk/app-release.apk

@@ -75,8 +75,12 @@ def main(page: ft.Page):
         page.theme_mode = ft.ThemeMode.DARK
         page.padding = 20
         
-        # Initialize DB
-        DatabaseManager.init_db()
+
+        def show_message(page, text):
+            page.snack_bar = ft.SnackBar(content=ft.Text(text))
+            page.snack_bar.open = True
+            page.update()
+
 
         # --- Navigation Functions ---
         def go_home(e=None):
@@ -127,7 +131,7 @@ def main(page: ft.Page):
                     ),
                     ft.FloatingActionButton(
                         icon="add", 
-                        on_click=lambda e: page.open(ft.SnackBar(ft.Text("Add Routine coming next!")))
+                        on_click=lambda e: show_message(page, "Add Routine coming next!")
                     ),
                 ]
             )
@@ -171,7 +175,7 @@ def main(page: ft.Page):
                 controls=[
                     ft.AppBar(
                         title=ft.Text(routine_name), 
-                        leading=ft.IconButton("arrow_back", on_click=lambda e: page.pop()),
+                        leading=ft.IconButton(icon="arrow_back", on_click=lambda e: page.pop()),
                         bgcolor="surfaceVariant"
                     ),
                     ft.Column(
@@ -196,7 +200,7 @@ def main(page: ft.Page):
 
             def save_log(self, e):
                 if not self.txt_weight.value or not self.txt_reps.value or not self.txt_sets.value:
-                    e.page.open(ft.SnackBar(ft.Text("Please fill all fields")))
+                    show_message(e.page, "Please fill all fields")
                     return
 
                 try:
@@ -215,7 +219,7 @@ def main(page: ft.Page):
                     conn.commit()
                     conn.close()
                     
-                    e.page.open(ft.SnackBar(ft.Text(f"Saved {self.name}!")))
+                    show_message(e.page, f"Saved {self.name}!")
                     # Clear fields
                     self.txt_weight.value = ""
                     self.txt_reps.value = ""
@@ -223,11 +227,11 @@ def main(page: ft.Page):
                     e.page.update()
                     
                 except ValueError:
-                    e.page.open(ft.SnackBar(ft.Text("Invalid numbers")))
+                    show_message(e.page, "Invalid numbers")
 
             def show_history(self, e):
                 # Implement simple graph or history list here
-                 e.page.open(ft.SnackBar(ft.Text("History graph coming soon!")))
+                 show_message(e.page, "History graph coming soon!")
 
             def build(self):
                 return ft.Card(
@@ -236,7 +240,7 @@ def main(page: ft.Page):
                         content=ft.Column([
                             ft.Row([
                                 ft.Text(self.name, size=18, weight=ft.FontWeight.BOLD),
-                                ft.IconButton("show_chart", on_click=self.show_history)
+                                ft.IconButton(icon="show_chart", on_click=self.show_history)
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                             
                             ft.Text(self.log_text, size=12, italic=True),

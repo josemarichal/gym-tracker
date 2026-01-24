@@ -71,6 +71,14 @@ def main(page: ft.Page):
             DatabaseManager.set_db_path(db_file)
             print(f"Set DB path to: {db_file}")
         
+        # Ensure DB is initialized
+        try:
+            print("Initializing database...")
+            DatabaseManager.init_db()
+        except Exception as db_err:
+            page.add(ft.Text(f"DB Init Error: {db_err}", color="red"))
+            return
+
         page.title = "Gym Tracker Pro"
         page.theme_mode = ft.ThemeMode.DARK
         page.padding = 20

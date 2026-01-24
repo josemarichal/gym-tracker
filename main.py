@@ -62,21 +62,45 @@ class DatabaseManager:
 
 def main(page: ft.Page):
     try:
+        page.scroll = "auto"
+        
+        # --- Debug Logging ---
+        debug_col = ft.Column()
+        page.add(debug_col)
+        def log(msg):
+            print(msg)
+            debug_col.controls.append(ft.Text(str(msg), color="green", size=12))
+            try:
+                page.update()
+            except:
+                pass
+
+        log("App Starting...")
+        log(f"Platform: {page.platform}")
+
         # --- Platform Specific Setup ---
         # On Android/iOS, we must use a writeable document directory.
         if page.platform in [ft.PagePlatform.ANDROID, ft.PagePlatform.IOS]:
             # os.path.expanduser("~") commonly points to the app's writable usage home on P4A/mobile
-            app_doc_dir = os.path.expanduser("~")
-            db_file = os.path.join(app_doc_dir, "weight_training.db")
-            DatabaseManager.set_db_path(db_file)
-            print(f"Set DB path to: {db_file}")
+            try:
+                app_doc_dir = os.path.expanduser("~")
+                log(f"App Doc Dir: {app_doc_dir}")
+                db_file = os.path.join(app_doc_dir, "weight_training.db")
+                DatabaseManager.set_db_path(db_file)
+                log(f"Set DB path to: {db_file}")
+            except Exception as e:
+                log(f"Path Error: {e}")
+        else:
+             log("Running on Desktop/Web")
         
         # Ensure DB is initialized
         try:
-            print("Initializing database...")
+            log("Initializing database...")
             DatabaseManager.init_db()
+            log("Database initialized.")
         except Exception as db_err:
-            page.add(ft.Text(f"DB Init Error: {db_err}", color="red"))
+            log(f"DB Init Error: {db_err}")
+            page.add(ft.Text(f"CRITICAL DB ERROR: {db_err}", color="red", size=20))
             return
 
         page.title = "Gym Tracker Pro"
